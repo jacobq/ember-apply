@@ -12,6 +12,13 @@ let it = test.concurrent;
 
 let original = process.cwd();
 
+/// Convience utility function for translating somePath + '/x/y/z'
+/// into path.join(somePath, 'x', 'y', 'x')
+/// for OS independence (i.e. Windows support)
+function makeOSIndependentPaths(root, subPaths) {
+  return subPaths.map((slashPath) => path.join(root, ...slashPath.split('/')));
+}
+
 describe('project', () => {
   beforeEach(() => {
     process.chdir(original);
@@ -24,7 +31,6 @@ describe('project', () => {
     it('in a git directory, it works', async () => {
       let root = await project.gitRoot();
       let expected = path.resolve(__dirname, '../..');
-
       expect(root).toEqual(expected);
     });
 
@@ -115,13 +121,13 @@ describe('project', () => {
         workspaces.push(current);
       }
 
-      expect(workspaces).toEqual([
-        root,
-        root + '/packages/a',
-        root + '/packages/b',
-        root + '/packages/c',
-        root + '/d',
-      ]);
+      expect(workspaces).toEqual(makeOSIndependentPaths(root,[
+        '',
+        '/packages/a',
+        '/packages/b',
+        '/packages/c',
+        '/d',
+      ]));
     });
   });
 
@@ -130,13 +136,13 @@ describe('project', () => {
       let workspaces = await project.getWorkspaces();
       let root = await project.workspaceRoot();
 
-      expect(workspaces).toEqual([
-        root,
-        root + '/ember-apply',
-        root + '/packages/docs',
-        root + '/packages/ember/embroider',
-        root + '/packages/ember/tailwind',
-      ]);
+      expect(workspaces).toEqual(makeOSIndependentPaths(root,[
+        '',
+        'ember-apply',
+        '/packages/docs',
+        '/packages/ember/embroider',
+        '/packages/ember/tailwind',
+      ]));
     });
   });
 });
