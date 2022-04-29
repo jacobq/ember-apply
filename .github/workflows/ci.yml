@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - master
+      - jacobq/*  
 
 env:
   CI: true
