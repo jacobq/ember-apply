@@ -6,7 +6,8 @@ on:
     branches:
       - main
       - master
-      - jacobq/*  
+      # To run tests on fork / circumvent need for approval to run on PR
+      - jacobq/*
 
 env:
   CI: true
@@ -52,7 +53,7 @@ jobs:
   tooling:
     name: Tooling
     runs-on: ubuntu-latest
-    if: github.ref != 'refs/heads/main'
+    if: github.repository == 'NullVoxPopuli/ember-apply' && github.ref != 'refs/heads/main'
     timeout-minutes: 2
     needs: [install_dependencies]
 
@@ -78,7 +79,7 @@ jobs:
   publish:
     name: Release
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.repository == 'NullVoxPopuli/ember-apply' && github.ref == 'refs/heads/main'
     needs: [tests]
 
     steps:
