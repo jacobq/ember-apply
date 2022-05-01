@@ -5,8 +5,7 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { project } from '../src';
 import { newEmberApp, newMonorepo, newTmpDir, readFile } from '../src/test-utils';
 
-// let it = test.concurrent;
-// Snapshot testing is broken in concurrent tests
+// Snapshot testing is broken for concurrent tests in vitest < v0.10.0
 // see: https://github.com/vitest-dev/vitest/issues/551
 let it = test.concurrent;
 
@@ -31,6 +30,7 @@ describe('project', () => {
     it('in a git directory, it works', async () => {
       let root = await project.gitRoot();
       let expected = path.resolve(__dirname, '../..');
+
       expect(root).toEqual(expected);
     });
 
@@ -81,7 +81,6 @@ describe('project', () => {
       await project.gitIgnore('test-test', '# misc');
 
       text = await readFile(path.join(tmpDir, '.gitignore'));
-
       expect(text).toMatch(/# misc(\s+)test-test/);
     });
 
@@ -121,13 +120,15 @@ describe('project', () => {
         workspaces.push(current);
       }
 
-      expect(workspaces).toEqual(makeOSIndependentPaths(root,[
-        '',
-        '/packages/a',
-        '/packages/b',
-        '/packages/c',
-        '/d',
-      ]));
+      expect(workspaces).toEqual(
+        makeOSIndependentPaths(root, [
+          '',
+          '/packages/a',
+          '/packages/b',
+          '/packages/c',
+          '/d'
+        ])
+      );
     });
   });
 
@@ -136,13 +137,15 @@ describe('project', () => {
       let workspaces = await project.getWorkspaces();
       let root = await project.workspaceRoot();
 
-      expect(workspaces).toEqual(makeOSIndependentPaths(root,[
-        '',
-        'ember-apply',
-        '/packages/docs',
-        '/packages/ember/embroider',
-        '/packages/ember/tailwind',
-      ]));
+      expect(workspaces).toEqual(
+        makeOSIndependentPaths(root, [
+          '',
+          'ember-apply',
+          '/packages/docs',
+          '/packages/ember/embroider',
+          '/packages/ember/tailwind',
+        ])
+      );
     });
   });
 });
